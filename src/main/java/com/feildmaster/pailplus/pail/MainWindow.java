@@ -8,7 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 public class MainWindow extends JPanel {
-    public MainWindow() {
+	private static final long serialVersionUID = 8918662206481245587L;
+
+	public MainWindow() {
         initComponents();
     }
 

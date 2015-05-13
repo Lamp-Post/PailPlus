@@ -10,7 +10,8 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 public class MonitorPanel extends JPanel {
-    private JLabel memory = new JLabel();
+	private static final long serialVersionUID = -6457233117909245809L;
+	private JLabel memory = new JLabel();
     private JLabel threads = new JLabel();
     private JLabel tasks = new JLabel();
 

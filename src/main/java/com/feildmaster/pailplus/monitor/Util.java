@@ -3,23 +3,39 @@ package com.feildmaster.pailplus.monitor;
 import com.feildmaster.pailplus.PailPlus;
 import com.feildmaster.pailplus.pail.MainWindow;
 import com.feildmaster.pailplus.pail.PailTray;
-import java.util.*;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
+
+import org.spongepowered.api.Game;
+import org.spongepowered.api.Server;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.plugin.PluginManager;
+import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.world.World;
+
 import me.escapeNT.pail.Pail;
-import org.bukkit.entity.Player;
-import org.bukkit.*;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.*;
 
 public class Util {
-    private static final Server server = Bukkit.getServer();
+    private static final Game game = PailPlus.getGame();
+    private static final Server server = PailPlus.getServer();
     private static final PailTray tray = new PailTray();
-    private static final PluginManager pm = server.getPluginManager();
+    private static final PluginManager pm = PailPlus.getGame().getPluginManager();
     private static Map<String, Boolean> pluginStatus = new HashMap<String, Boolean>();
-    private static CommandSender sender;
+    private static CommandSource source;
     private static Pail pail;
     private static PailPlus pailPlus;
+	private static File dataFolder;
 
+    public static Game getGame() {
+        return game;
+    }
+    
     public static Server getServer() {
         return server;
     }
@@ -39,14 +55,14 @@ public class Util {
 
     public static Pail getPail() {
         if (pail == null) {
-            pail = (Pail) getServer().getPluginManager().getPlugin("Pail");
+            pail = (Pail) getGame().getPluginManager().getPlugin("pail").get().getInstance();
         }
         return pail;
     }
 
     public static PailPlus getPailPlus() {
         if (pailPlus == null) {
-            pailPlus = (PailPlus) getServer().getPluginManager().getPlugin("PailPlus");
+            pailPlus = (PailPlus) getGame().getPluginManager().getPlugin("pailplus").get().getInstance();
         }
         return pailPlus;
     }
@@ -55,11 +71,11 @@ public class Util {
         return getPailPlus().getMainWindow();
     }
 
-    public static Player[] getPlayers() {
+    public static Collection<Player> getPlayers() {
         return getServer().getOnlinePlayers();
     }
 
-    public static Map<String, Boolean> getPluginStatus() {
+/*    public static Map<String, Boolean> getPluginStatus() {
         if (pluginStatus.isEmpty()) {
             updatePluginStatus();
         }
@@ -67,55 +83,56 @@ public class Util {
     }
 
     public static Map<String, Boolean> updatePluginStatus() {
-        for (Plugin p : getServer().getPluginManager().getPlugins()) {
-            pluginStatus.put(p.getDescription().getName(), p.isEnabled());
+        for (PluginContainer p : getGame().getPluginManager().getPlugins()) {
+            pluginStatus.put(p.getName(), p.isEnabled());
         }
         return pluginStatus;
     }
 
-    public static List<World> getWorlds() {
+    public static Collection<World> getWorlds() {
         return getServer().getWorlds();
     }
 
-//    public static void setPlayerPermission(String player, String world, String perm, Boolean value) {
-//        getPailPlus().getPermsConfig().setPermission(player, world, perm, value); // Set config
-//        Player p = getServer().getPlayer(player);
-//        if(p != null)
-//            loadPermissions(p);
-////        else
-////            getPermPanel().reloadPermissions();
-//    }
-//
-//    public static void loadPermissions(Player player) {
-//        if(player == null) return;
-//
-//        PermissionAttachment attachment = getPailPlus().getAttachment(player);
-//        if(attachment==null) return;
-//
-//        for (String key : attachment.getPermissions().keySet())
-//            attachment.unsetPermission(key);
-//
-//        for(Map.Entry<String, Object> entry : getPailPlus().getPermsConfig().getPlayerPermissions(player).entrySet())
-//            if (entry.getValue() != null && entry.getValue() instanceof Boolean)
-//                attachment.setPermission(entry.getKey(), (Boolean)entry.getValue());
-//
-//        player.recalculatePermissions();
-////        getPermPanel().reloadPermissions();
-//    }
-//
-//    public static void preloadUsers() {
-//        for(String name : getPermsConfig().getRegisteredPlayers()) {
-//            Player player = getServer().getPlayer(name);
-//            if(player == null)
-//                getPermPanel().addPlayer(name);
-//            else
-//                getPailPlus().registerPlayer(player);
-//        }
-//    }
+    public static void setPlayerPermission(String player, String world, String perm, Boolean value) {
+        getPailPlus().getPermsConfig().setPermission(player, world, perm, value); // Set config
+        Player p = getServer().getPlayer(player);
+        if (p != null) {
+            loadPermissions(p);
+        } else {
+            getPermPanel().reloadPermissions();
+        }
+    }
 
-//    public static void addPermissionNodes() {
-//        //getAI().getPermissionPanel().getPannel().addBoxes(getPermsConfig().getRegisteredNodes());
-//    }
+    public static void loadPermissions(Player player) {
+        if(player == null) return;
+
+        PermissionAttachment attachment = getPailPlus().getAttachment(player);
+        if(attachment==null) return;
+
+        for (String key : attachment.getPermissions().keySet())
+            attachment.unsetPermission(key);
+
+        for(Map.Entry<String, Object> entry : getPailPlus().getPermsConfig().getPlayerPermissions(player).entrySet())
+            if (entry.getValue() != null && entry.getValue() instanceof Boolean)
+                attachment.setPermission(entry.getKey(), (Boolean)entry.getValue());
+
+        player.recalculatePermissions();
+        getPermPanel().reloadPermissions();
+    }
+
+    public static void preloadUsers() {
+        for(String name : getPermsConfig().getRegisteredPlayers()) {
+            Player player = getServer().getPlayer(name);
+            if(player == null)
+                getPermPanel().addPlayer(name);
+            else
+                getPailPlus().registerPlayer(player);
+        }
+    }
+
+    public static void addPermissionNodes() {
+        getAI().getPermissionPanel().getPannel().addBoxes(getPermsConfig().getRegisteredNodes());
+    }*/ //TODO
 
     public static PailTray getTray() {
         return tray;
@@ -148,7 +165,6 @@ public class Util {
     public static void bringToFront() {
         final me.escapeNT.pail.GUIComponents.MainWindow window = getPail().getMainWindow();
         java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
             public void run() {
                 window.toFront();
                 window.repaint();
@@ -158,21 +174,29 @@ public class Util {
     }
 
     public static void reload() {
-        getServer().dispatchCommand(getSender(), "reload");
+        getGame().getCommandDispatcher().process(getSender(), "reload");
     }
 
     public static void stop() {
-        Util.getServer().dispatchCommand(getSender(), "stop");
+    	getGame().getCommandDispatcher().process(getSender(), "stop");
     }
 
     public static void saveAll() {
-        getServer().dispatchCommand(getSender(), "save-all");
+    	getGame().getCommandDispatcher().process(getSender(), "save-all");
     }
 
-    public static CommandSender getSender() {
-        if (sender == null) {
-            sender = getServer().getConsoleSender();
+    public static CommandSource getSender() {
+        if (source == null) {
+            source = getServer().getConsole();
         }
-        return sender;
+        return source;
     }
+
+	public static void setDataFolder(File file) {
+		dataFolder = file;
+	}
+
+	public static File getDataFolder() {
+		return dataFolder;
+	}
 }

@@ -2,13 +2,14 @@ package com.feildmaster.pailplus.monitor;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
-import org.bukkit.scheduler.BukkitScheduler;
+
+import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 
 public class Processing {
 
     private static final ThreadMXBean thread = ManagementFactory.getThreadMXBean();
     private static final Runtime runtime = Runtime.getRuntime();
-    private static final BukkitScheduler schedule = Util.getServer().getScheduler();
+    private static final SynchronousScheduler schedule = Util.getGame().getSyncScheduler();
 
     public static long memoryUsed() {
         return runtime.totalMemory() - runtime.freeMemory();
@@ -25,6 +26,6 @@ public class Processing {
     }
 
     public static int tasks() {
-        return schedule.getPendingTasks().size()+schedule.getActiveWorkers().size();
+        return schedule.getScheduledTasks().size();
     }
 }

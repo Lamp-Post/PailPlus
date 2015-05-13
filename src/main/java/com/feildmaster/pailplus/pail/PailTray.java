@@ -1,15 +1,20 @@
 package com.feildmaster.pailplus.pail;
 
+import com.feildmaster.pailplus.PailPlus;
 import com.feildmaster.pailplus.monitor.Util;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
+
+import me.escapeNT.pail.Pail;
 
 public class PailTray {
     private static final TrayIcon PAIL_ICON = new TrayIcon(Util.getPail().PAIL_ICON);
 
     static {
-        PAIL_ICON.setToolTip("Pail "+Util.getPail().getDescription().getVersion());
+        Util.getPail();
+		PAIL_ICON.setToolTip("Pail " + Pail.PLUGIN_VERSION);
         PAIL_ICON.setImageAutoSize(true);
         PAIL_ICON.setPopupMenu(new PailMenu());
         PAIL_ICON.addMouseListener(new Listener());
@@ -20,7 +25,7 @@ public class PailTray {
         try {
             SystemTray.getSystemTray().add(PAIL_ICON);
         } catch (AWTException ex) {
-            Util.getPailPlus().getLogger().throwing("PailPlusTray", "addIcon", ex);
+			PailPlus.getLogger().throwing("PailPlusTray", "addIcon", ex);
         }
     }
 

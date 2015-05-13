@@ -1,14 +1,18 @@
 package com.feildmaster.pailplus.pail;
 
 import com.feildmaster.pailplus.monitor.Util;
+
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.ScrollPaneConstants;
 
 public class SettingsPanel extends JPanel {
-    public SettingsPanel() {
+	private static final long serialVersionUID = 8379902496501410005L;
+	public SettingsPanel() {
         init();
     }
     private void init() {
@@ -34,6 +38,6 @@ public class SettingsPanel extends JPanel {
         //Util.getServer().setSpawnRadius(0);
 
         // Consol Wordwrap -- Failed
-        //Util.getPail().getMainWindow().getServerControls().getServerConsolePanel().getConsoleOutput().getScrollerPanel().setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        Util.getPail().getMainWindow().getServerControls().getServerConsolePanel().getConsoleOutput().getScrollerPanel().setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
 }
